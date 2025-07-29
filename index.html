@@ -38,11 +38,11 @@
     .spark {
       position: absolute;
       font-size: 0.9em;
-      color: white;
+      color: blue;
       font-weight: bold;
       animation: sparkle 1.5s forwards;
       pointer-events: none;
-      text-shadow: 0 0 10px white;
+      text-shadow: 0 0 10px blue;
       font-family: Georgia, serif;
     }
 
@@ -98,7 +98,7 @@
     drawRain();
 
     function createCircularBurst(x, y) {
-      const radius = 80;
+      const radius = 10;
       const sparks = 10;
       for (let i = 0; i < sparks; i++) {
         const angle = (2 * Math.PI / sparks) * i;

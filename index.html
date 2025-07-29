@@ -71,16 +71,16 @@
   <canvas id="rain"></canvas>
 
   <script>
-    // Fondo de lluvia de "Te Amo"
+    // Fondo de lluvia rápida
     const canvas = document.getElementById('rain');
     const ctx = canvas.getContext('2d');
     let width, height;
 
-    const drops = Array(200).fill().map(() => ({
+    const drops = Array(300).fill().map(() => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      speed: 1.5 + Math.random() * 2,
-      size: 8 + Math.random() * 4
+      speed: 2 + Math.random() * 3,
+      size: 6 + Math.random() * 4
     }));
 
     function resize() {
@@ -113,21 +113,25 @@
 
     drawRain();
 
-    // Destello al tocar o hacer click
-    function createSpark(x, y) {
-      const spark = document.createElement('div');
-      spark.className = 'spark';
-      spark.style.left = `${x}px`;
-      spark.style.top = `${y}px`;
-      spark.textContent = 'TE AMO';
-      document.body.appendChild(spark);
-      setTimeout(() => spark.remove(), 1500);
+    // Múltiples destellos de "TE AMO"
+    function createBurst(x, y) {
+      for (let i = 0; i < 10; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'spark';
+        const offsetX = (Math.random() - 0.5) * 100;
+        const offsetY = (Math.random() - 0.5) * 100;
+        spark.style.left = `${x + offsetX}px`;
+        spark.style.top = `${y + offsetY}px`;
+        spark.textContent = 'TE AMO';
+        document.body.appendChild(spark);
+        setTimeout(() => spark.remove(), 1500);
+      }
     }
 
-    document.addEventListener('click', e => createSpark(e.clientX, e.clientY));
+    document.addEventListener('click', e => createBurst(e.clientX, e.clientY));
     document.addEventListener('touchstart', e => {
       const touch = e.touches[0];
-      createSpark(touch.clientX, touch.clientY);
+      createBurst(touch.clientX, touch.clientY);
     });
   </script>
 </body>

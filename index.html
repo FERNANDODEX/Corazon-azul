@@ -1,83 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Te Amo</title>
+  <meta charset="UTF-8">
+  <title>Rosa para ti</title>
   <style>
     body {
       margin: 0;
-      background-color: #000;
+      background: radial-gradient(ellipse at center, #100015 0%, #000 100%);
       overflow: hidden;
     }
-
-    h1 {
-      position: absolute;
-      top: 30px;
-      width: 100%;
-      text-align: center;
-      font-family: 'Pacifico', cursive;
-      font-size: 4em;
-      color: #00f0ff;
-      z-index: 10;
-    }
   </style>
-  <!-- Fuente atractiva desde Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-  <!-- Three.js y GSAP para animaciones -->
+  <!-- Three.js y GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
-  <h1>Te Amo</h1>
-  <script>
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({antialias: true});
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  const renderer = new THREE.WebGLRenderer({antialias: true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const rose = new THREE.Group();
+
+  for (let i = 0; i < 40; i++) {
+    const petal = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 12, 12),
+      new THREE.MeshPhongMaterial({color: 0xff3366, shininess: 100})
+    );
+    const angle = i * 0.5;
+    const radius = 0.3 + i * 0.02;
+    petal.position.set(
+      Math.sin(angle) * radius,
+      Math.cos(angle) * radius,
+      i * 0.01
+    );
+    petal.rotation.y = angle;
+    rose.add(petal);
+  }
+
+  scene.add(rose);
+
+  // Luz suave
+  const light = new THREE.PointLight(0xffffff, 1, 100);
+  light.position.set(5, 5, 5);
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0x220022));
+
+  // Estrellas flotantes
+  const stars = new THREE.Group();
+  for (let i = 0; i < 80; i++) {
+    const star = new THREE.Mesh(
+      new THREE.SphereGeometry(0.03, 6, 6),
+      new THREE.MeshBasicMaterial({color: 0x88ccff})
+    );
+    star.position.set(
+      (Math.random() - 0.5) * 10,
+      (Math.random() - 0.5) * 10,
+      (Math.random() - 0.5) * 10
+    );
+    stars.add(star);
+  }
+  scene.add(stars);
+
+  // Animaciones
+  gsap.to(rose.rotation, {y: Math.PI * 2, duration: 20, repeat: -1, ease: "linear"});
+  gsap.to(stars.rotation, {y: Math.PI * 2, duration: 60, repeat: -1, ease: "linear"});
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    const particles = new THREE.Group();
-    const heartPoints = [];
-    const scale = 0.1;
-
-    for (let t = 0; t < Math.PI * 2; t += 0.02) {
-      const x = 16 * Math.pow(Math.sin(t), 3);
-      const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-      heartPoints.push(new THREE.Vector3(x * scale, y * scale, 0));
-    }
-
-    heartPoints.forEach(p => {
-      const geometry = new THREE.SphereGeometry(0.03, 8, 8);
-      const material = new THREE.MeshBasicMaterial({color: 0x00f0ff});
-      const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.copy(p);
-      particles.add(sphere);
-    });
-
-    scene.add(particles);
-    camera.position.z = 5;
-
-    // Animación rotatoria suave
-    gsap.to(particles.rotation, {
-      y: Math.PI * 2,
-      duration: 10,
-      repeat: -1,
-      ease: "linear"
-    });
-
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    // Responsive
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+  });
+</script>
 </body>
 </html>

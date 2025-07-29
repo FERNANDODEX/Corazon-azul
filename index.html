@@ -8,17 +8,16 @@
       margin: 0;
       overflow: hidden;
       background-color: #000;
-      font-family: 'Great Vibes', cursive;
+      font-family: Georgia, serif;
     }
 
     h1 {
       position: absolute;
-      top: 40px;
-      width: 100%;
-      text-align: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-size: 5em;
-      letter-spacing: 5px;
-      color: #00f0ff;
+      color: #ffffff;
       text-transform: uppercase;
       z-index: 2;
       pointer-events: none;
@@ -26,20 +25,7 @@
     }
 
     .heart {
-      position: absolute;
-      left: 50%;
-      top: 55%;
-      transform: translate(-50%, -50%) scale(1);
-      font-size: 4em;
-      color: #00f0ff;
-      animation: heartbeat 1s infinite;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); }
-      50% { transform: translate(-50%, -50%) scale(1.4); }
+      display: none;
     }
 
     canvas {
@@ -51,35 +37,34 @@
 
     .spark {
       position: absolute;
-      color: #00f0ff;
-      font-size: 1.2em;
+      font-size: 0.9em;
+      color: white;
       font-weight: bold;
       animation: sparkle 1.5s forwards;
       pointer-events: none;
+      text-shadow: 0 0 10px white;
+      font-family: Georgia, serif;
     }
 
     @keyframes sparkle {
-      0% { opacity: 1; transform: scale(1); text-shadow: 0 0 10px #00f0ff; }
-      100% { opacity: 0; transform: scale(3); text-shadow: 0 0 30px #00f0ff; }
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2); }
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 </head>
 <body>
   <h1>TE AMO</h1>
-  <div class="heart">❤️</div>
   <canvas id="rain"></canvas>
 
   <script>
-    // Fondo de lluvia rápida
     const canvas = document.getElementById('rain');
     const ctx = canvas.getContext('2d');
     let width, height;
 
-    const drops = Array(300).fill().map(() => ({
+    const drops = Array(500).fill().map(() => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      speed: 2 + Math.random() * 3,
+      speed: 1 + Math.random() * 3,
       size: 6 + Math.random() * 4
     }));
 
@@ -95,11 +80,10 @@
 
     function drawRain() {
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = '#00f0ff';
-      ctx.font = '8px Great Vibes';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '10px Georgia';
 
       drops.forEach(d => {
-        ctx.font = `${d.size}px Great Vibes`;
         ctx.fillText('Te Amo', d.x, d.y);
         d.y += d.speed;
         if (d.y > height) {
@@ -113,13 +97,16 @@
 
     drawRain();
 
-    // Múltiples destellos de "TE AMO"
-    function createBurst(x, y) {
-      for (let i = 0; i < 10; i++) {
+    function createCircularBurst(x, y) {
+      const radius = 80;
+      const sparks = 10;
+      for (let i = 0; i < sparks; i++) {
+        const angle = (2 * Math.PI / sparks) * i;
+        const offsetX = Math.cos(angle) * radius;
+        const offsetY = Math.sin(angle) * radius;
+
         const spark = document.createElement('div');
         spark.className = 'spark';
-        const offsetX = (Math.random() - 0.5) * 100;
-        const offsetY = (Math.random() - 0.5) * 100;
         spark.style.left = `${x + offsetX}px`;
         spark.style.top = `${y + offsetY}px`;
         spark.textContent = 'TE AMO';
@@ -128,10 +115,10 @@
       }
     }
 
-    document.addEventListener('click', e => createBurst(e.clientX, e.clientY));
+    document.addEventListener('click', e => createCircularBurst(e.clientX, e.clientY));
     document.addEventListener('touchstart', e => {
       const touch = e.touches[0];
-      createBurst(touch.clientX, touch.clientY);
+      createCircularBurst(touch.clientX, touch.clientY);
     });
   </script>
 </body>

@@ -6,68 +6,124 @@
   <style>
     body {
       margin: 0;
-      background-color: #000;
       overflow: hidden;
+      background-color: #000;
+      font-family: 'Great Vibes', cursive;
     }
 
     h1 {
       position: absolute;
-      top: 20px;
+      top: 30px;
       width: 100%;
       text-align: center;
-      font-family: 'Great Vibes', cursive;
       font-size: 3em;
       color: #00f0ff;
-      z-index: 10;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .heart {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      color: #00f0ff;
+      font-size: 4em;
+      animation: heartbeat 1s infinite;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.3); }
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .spark {
+      position: absolute;
+      color: #00f0ff;
+      font-size: 1em;
+      animation: fadeOut 2s forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2); }
     }
   </style>
-  <!-- Fuente romántica -->
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-  <!-- Librerías para animación y 3D -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 </head>
 <body>
   <h1>Te Amo</h1>
+  <div class="heart">❤️</div>
+  <canvas id="rain"></canvas>
+
   <script>
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    // Fondo con lluvia de "Te Amo"
+    const canvas = document.getElementById('rain');
+    const ctx = canvas.getContext('2d');
+    let width, height;
 
-    // Crear puntos para formar el corazón
-    const geometry = new THREE.BufferGeometry();
-    const heartPoints = [];
-    const scale = 0.2;
+    const texts = Array(100).fill().map(() => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      speed: 0.5 + Math.random() * 1,
+      fontSize: 10 + Math.random() * 10,
+    }));
 
-    for (let t = 0; t < Math.PI * 2; t += 0.02) {
-      const x = 16 * Math.pow(Math.sin(t), 3);
-      const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-      heartPoints.push(x * scale, y * scale, 0);
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
     }
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(heartPoints, 3));
-    const material = new THREE.PointsMaterial({ color: 0x00f0ff, size: 0.05 });
-    const heart = new THREE.Points(geometry, material);
-    scene.add(heart);
+    window.addEventListener('resize', resize);
+    resize();
 
-    camera.position.z = 5;
+    function drawRain() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = '12px Great Vibes';
 
-    // Animación de rotación
-    function animate() {
-      requestAnimationFrame(animate);
-      heart.rotation.y += 0.01;
-      heart.rotation.x += 0.005;
-      renderer.render(scene, camera);
+      texts.forEach(text => {
+        ctx.font = `${text.fontSize}px Great Vibes`;
+        ctx.fillText('Te Amo', text.x, text.y);
+        text.y += text.speed;
+        if (text.y > height) {
+          text.y = 0;
+          text.x = Math.random() * width;
+        }
+      });
+
+      requestAnimationFrame(drawRain);
     }
 
-    animate();
+    drawRain();
 
-    // Responsive
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    // Destellos de “Te Amo” al tocar o hacer click
+    function createSpark(x, y) {
+      const spark = document.createElement('div');
+      spark.className = 'spark';
+      spark.style.left = `${x}px`;
+      spark.style.top = `${y}px`;
+      spark.textContent = 'Te Amo';
+      document.body.appendChild(spark);
+      setTimeout(() => spark.remove(), 2000);
+    }
+
+    document.addEventListener('click', e => createSpark(e.clientX, e.clientY));
+    document.addEventListener('touchstart', e => {
+      const touch = e.touches[0];
+      createSpark(touch.clientX, touch.clientY);
     });
   </script>
 </body>

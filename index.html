@@ -41,16 +41,16 @@
       text-shadow: 0 0 10px white;
       font-family: Georgia, serif;
       opacity: 0;
-      animation: burst 1.5s forwards;
+      animation: perspectiveBurst 1.5s forwards;
     }
 
-    @keyframes burst {
+    @keyframes perspectiveBurst {
       0% {
-        transform: translate(0, 0);
+        transform: translate(0, 0) scale(0.3);
         opacity: 1;
       }
       100% {
-        transform: var(--transform);
+        transform: var(--transform) scale(1);
         opacity: 0;
       }
     }
@@ -61,7 +61,7 @@
   <canvas id="rain"></canvas>
 
   <script>
-    // Fondo animado con lluvia de “Te Amo”
+    // Lluvia constante de “Te Amo”
     const canvas = document.getElementById('rain');
     const ctx = canvas.getContext('2d');
     let width, height;
@@ -101,10 +101,10 @@
 
     drawRain();
 
-    // Efecto pirotécnico desde el centro hacia la circunferencia
-    function createFirework(x, y) {
-      const sparks = 20;
-      const radius = 100;
+    // Efecto perspectiva 3D desde centro al clic
+    function createPerspectiveBurst(x, y) {
+      const sparks = 30;
+      const radius = 150;
 
       for (let i = 0; i < sparks; i++) {
         const angle = (2 * Math.PI / sparks) * i;
@@ -114,12 +114,10 @@
         const spark = document.createElement('div');
         spark.className = 'spark';
         spark.textContent = 'Te Amo';
-
-        // Posiciona en el centro
         spark.style.left = `${x}px`;
         spark.style.top = `${y}px`;
 
-        // Define dirección con animación
+        // Simular perspectiva de fuga al expandir
         spark.style.setProperty('--transform', `translate(${offsetX}px, ${offsetY}px)`);
 
         document.body.appendChild(spark);
@@ -127,10 +125,10 @@
       }
     }
 
-    document.addEventListener('click', e => createFirework(e.clientX, e.clientY));
+    document.addEventListener('click', e => createPerspectiveBurst(e.clientX, e.clientY));
     document.addEventListener('touchstart', e => {
       const touch = e.touches[0];
-      createFirework(touch.clientX, touch.clientY);
+      createPerspectiveBurst(touch.clientX, touch.clientY);
     });
   </script>
 </body>

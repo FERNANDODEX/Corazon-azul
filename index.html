@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Te Amo</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      overflow: hidden;
+    }
+
+    h1 {
+      position: absolute;
+      top: 30px;
+      width: 100%;
+      text-align: center;
+      font-family: 'Pacifico', cursive;
+      font-size: 4em;
+      color: #00f0ff;
+      z-index: 10;
+    }
+  </style>
+  <!-- Fuente atractiva desde Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <!-- Three.js y GSAP para animaciones -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+  <h1>Te Amo</h1>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const particles = new THREE.Group();
+    const heartPoints = [];
+    const scale = 0.1;
+
+    for (let t = 0; t < Math.PI * 2; t += 0.02) {
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+      heartPoints.push(new THREE.Vector3(x * scale, y * scale, 0));
+    }
+
+    heartPoints.forEach(p => {
+      const geometry = new THREE.SphereGeometry(0.03, 8, 8);
+      const material = new THREE.MeshBasicMaterial({color: 0x00f0ff});
+      const sphere = new THREE.Mesh(geometry, material);
+      sphere.position.copy(p);
+      particles.add(sphere);
+    });
+
+    scene.add(particles);
+    camera.position.z = 5;
+
+    // Animación rotatoria suave
+    gsap.to(particles.rotation, {
+      y: Math.PI * 2,
+      duration: 10,
+      repeat: -1,
+      ease: "linear"
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Responsive
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
